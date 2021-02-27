@@ -55,8 +55,22 @@ function move(x,y){
         if(willWin(pattent,color)){
             console.log(color == 2?"X will win！":"O will win！")
         }
+        computerMove()
     }
-    
+}
+
+function computerMove(){
+    let chioce = bestChoice(pattent,color);
+    console.log(chioce)
+    if(chioce.point){
+        pattent[chioce.point[1]][chioce.point[0]] = color;
+    }
+    if(check(pattent,color)){
+        alert(color == 2?"X 赢了！":"O 赢了！")
+    }
+    color = 3-color;
+    show(pattent);
+   
 }
 
 function willWin(pattent,color){
@@ -66,12 +80,44 @@ function willWin(pattent,color){
                 let pat = clone(pattent);
                 pat[i][j] = color;
                 if(check(pat,color)){
-                    return true;
+                    return [j,i];
                 }
             }
         }
     }
-    return false;
+    return null;
+}
+
+function bestChoice(patten,color){
+    let p = null;
+    if(p = willWin(patten,color)){
+        return {
+            point:p,
+            result:1
+        }
+    }
+    let result = -2;
+    let point = null;
+    outer:for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+            if(patten[i][j] == 0){
+                let pat = clone(patten);
+                pat[i][j] = color;
+                let r = bestChoice(pat,3-color).result;
+                if(-r > result){
+                    result = -r;
+                    point = [j,i];
+                }
+                if(result == 1){
+                    break outer;
+                }
+            }
+        }
+    }
+    return {
+            point:point,
+            result:point?result:0
+        }
 }
 
 function clone(obj){
@@ -127,11 +173,8 @@ function check(patten,color){
     return false;
 }
 
-function bestChoice(){
-    
-}
-
 show(pattent);
+console.log(bestChoice(pattent,color))
 </script>    
 </body>
 </html>
