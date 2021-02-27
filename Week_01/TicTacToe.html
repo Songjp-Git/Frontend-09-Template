@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>第一周作业</title>
+</head>
+<body>
+<style>
+    .cell {
+        width: 100px;
+        height: 100px;
+        background-color: green;
+        display: inline-block;
+        border: solid 1px white;
+        vertical-align: middle;
+        line-height: 100px;
+        font-size: 50px;
+        text-align: center; 
+        color:#fff;   
+    }        
+</style>
+    <div id="board"></div>
+<script>
+let pattent = [
+    [0,0,0],
+    [0,0,0],
+    [0,0,0]
+];
+let color = 1;
+function show(patten){
+    let board = document.getElementById("board");
+    board.innerHTML = "";
+    for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+            cell.innerHTML = patten[i][j] == 2? "x" :
+                             patten[i][j] == 1? "o" : "";
+            cell.addEventListener("click",() => move(j,i))
+            board.appendChild(cell);                
+        }
+        board.appendChild(document.createElement("br"));
+    }
+}
+
+function move(x,y){
+    pattent[y][x] = color;
+    show(pattent);
+    if(check(pattent,color)){
+        alert(color == 2?"X 赢了！":"O 赢了！")
+    }else{
+        color = 3-color;
+        if(willWin(pattent,color)){
+            console.log(color == 2?"X will win！":"O will win！")
+        }
+    }
+    
+}
+
+function willWin(pattent,color){
+    for(let i=0;i<3;i++){
+        for(let j=0;j<3;j++){
+            if(pattent[i][j] == 0){
+                let pat = clone(pattent);
+                pat[i][j] = color;
+                if(check(pat,color)){
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+function clone(obj){
+    return JSON.parse(JSON.stringify(obj));
+}
+
+function check(patten,color){
+    for(let i=0;i<3;i++){
+       let win = true;
+       for(let j=0;j<3;j++){
+          if(patten[i][j] != color){
+            win = false;
+          }
+       }
+       if(win){
+           return true;
+       }  
+    }
+    for(let i=0;i<3;i++){
+       let win = true;
+       for(let j=0;j<3;j++){
+          if(patten[j][i] != color){
+            win = false;
+          }
+       }  
+       if(win){
+           return true;
+       }
+    }
+
+    {
+        let win = true;
+        for(let i=0;i<3;i++){
+            if(patten[i][2-i] !== color){
+                win = false;
+            }
+        }
+        if(win){
+                return true;
+            }
+    }
+    {
+        let win = true;
+        for(let i=0;i<3;i++){
+            if(patten[i][i] !== color){
+                win = false;
+            }
+        }
+        if(win){
+                return true;
+            }
+    }
+    return false;
+}
+
+show(pattent);
+</script>    
+</body>
+</html>
