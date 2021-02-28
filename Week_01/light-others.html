@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>红绿灯</title>
+</head>
+<body>
+<style>
+    div{
+        background-color: gray;
+        display: inline-block;
+        margin: 30px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50px;
+    }
+    .green.light{
+        background-color: green;
+    }
+    .yellow.light{
+        background-color: yellow;
+    }  
+    .red.light{
+        background-color: red;
+    }        
+</style>
+    <div class="green"></div>
+    <div class="yellow"></div>
+    <div class="red"></div>
+    <button id="next">下一个</button>
+<script>
+    //关闭所有灯
+    function closeAllLight(){
+        let lights = document.getElementsByTagName("div");
+        for(let i=0;i<3;i++){
+            lights[i].classList.remove("light");
+        }
+    }
+    //亮灯
+    function lightOn(color){
+        closeAllLight();
+        document.getElementsByClassName(color)[0].classList.add('light');
+    }
+    //延时setTime实现
+    function setTimeGo(){
+        lightOn("green");
+        setTimeout(function(){
+            lightOn("red");
+            setTimeout(function(){
+                lightOn("yellow");
+                setTimeout(function(){
+                    setTimeGo();
+                },1000)
+            },2000)
+        },3000)     
+    }
+
+    function sleep(t){
+        return new Promise((resolve) => {
+            setTimeout(resolve,t);
+        })
+    }
+    //promise实现
+    function promiseGo(){
+        lightOn("green");
+        sleep(1000).then(() => {
+            lightOn("yellow");
+            return sleep(1000);
+        }).then(() => {
+            lightOn("red");
+            return sleep(1000);
+        }).then(promiseGo)
+    }
+    //async实现
+    async function asynsGo(){
+        while(true){
+            lightOn("green");
+            await sleep(3000);
+            lightOn("yellow");
+            await sleep(1000); 
+            lightOn("red");
+            await sleep(3000);    
+        }
+    }
+
+    function manuLight(e,eventName){
+        return new Promise((resolve,reject) => {
+            e.addEventListener(eventName,resolve,{once:true})
+        })
+    }
+
+    //手动切换
+    async function manuGo(){
+        let element = document.getElementById("next");
+        while(true){
+            lightOn("green");
+            await manuLight(element,"click");
+            lightOn("yellow");
+            await manuLight(element,"click");
+            lightOn("red");
+            await manuLight(element,"click");
+        }
+    }
+
+    asynsGo()
+
+</script>    
+</body>
+</html>
